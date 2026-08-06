@@ -27,6 +27,7 @@ class CreateProductTest {
 
     private CreateProductDTO.Input validInput() {
         return new CreateProductDTO.Input() {
+            
             @Override
             public String name() {
                 return "Notebook Gamer";
