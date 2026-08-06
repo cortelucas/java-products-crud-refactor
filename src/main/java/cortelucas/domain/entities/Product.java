@@ -76,25 +76,15 @@ public class Product {
     }
 
     private void validateName(String name) {
-        if (name == null || name.trim().isEmpty() || name.isBlank()) {
-            throw new IllegalArgumentException("O nome do produto não pode ser vazio.");
-        }
-
-        if (name.length() < 3) {
-            throw new IllegalArgumentException("O nome do produto deve ter pelo menos 3 caracteres.");
-        }
+        validateText(name, "nome", 3, 255);
     }
 
     private void validateSegment(String segment) {
-        if (segment == null || segment.trim().isEmpty()) {
-            throw new IllegalArgumentException("O segmento do produto não pode ser vazio.");
-        }
+        validateText(segment, "segmento", 3, 255);
     }
 
     private void validateBrand(String brand) {
-        if (brand == null || brand.trim().isEmpty()) {
-            throw new IllegalArgumentException("A marca do produto não pode ser vazia.");
-        }
+        validateText(brand, "marca", 3, 255);
     }
 
     private void validatePrice(double price) {
@@ -106,6 +96,20 @@ public class Product {
     private void validateQuantity(int quantity) {
         if (quantity < 0) {
             throw new IllegalArgumentException("A quantidade do produto não pode ser negativa.");
+        }
+    }
+
+    private void validateText(String value, String fieldLabel, int minLength, int maxLength) {
+        if (value == null || value.trim().isEmpty()) {
+            throw new IllegalArgumentException("O " + fieldLabel + " do produto não pode ser vazio.");
+        }
+        if (value.trim().length() < minLength) {
+            throw new IllegalArgumentException(
+                    "O " + fieldLabel + " do produto precisa ter pelo menos " + minLength + " caracteres.");
+        }
+        if (value.trim().length() > maxLength) {
+            throw new IllegalArgumentException(
+                    "O " + fieldLabel + " do produto não pode ter mais de " + maxLength + " caracteres.");
         }
     }
 }
