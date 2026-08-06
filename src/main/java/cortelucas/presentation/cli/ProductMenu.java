@@ -15,12 +15,12 @@ import cortelucas.application.usecases.FilterProducts;
 import cortelucas.application.usecases.FindProductById;
 import cortelucas.application.usecases.ListProducts;
 import cortelucas.application.usecases.UpdateProduct;
-import cortelucas.domain.entities.Product;
 import cortelucas.domain.exceptions.ProductNotFoundException;
 
 public class ProductMenu {
 
-    private final Scanner scanner = new Scanner(System.in);
+    private final ConsoleReader reader = new ConsoleReader(new Scanner(System.in));
+    private final ProductPresenter presenter = new ProductPresenter();
 
     private final CreateProduct createProduct;
     private final ListProducts listProducts;
@@ -42,14 +42,13 @@ public class ProductMenu {
 
     public void start() {
         System.out.println("=== Sistema de Gerenciamento de Produtos ===");
-        System.out.print("Insira seu nome: ");
-        String nomeUsuario = scanner.nextLine();
+        String nomeUsuario = reader.lerLinha("Insira seu nome");
         System.out.println("Bem-vindo(a), " + nomeUsuario + "!");
 
         int opcao;
         do {
             exibirMenu();
-            opcao = lerOpcao();
+            opcao = reader.lerOpcao();
 
             try {
                 switch (opcao) {
@@ -68,7 +67,7 @@ public class ProductMenu {
 
         } while (opcao != 0);
 
-        scanner.close();
+        reader.close();
     }
 
     private void exibirMenu() {
@@ -83,36 +82,13 @@ public class ProductMenu {
         System.out.print("Escolha uma opção: ");
     }
 
-    private int lerOpcao() {
-        try {
-            return Integer.parseInt(scanner.nextLine().trim());
-        } catch (NumberFormatException e) {
-            return -1;
-        }
-    }
-
-    private String lerId() {
-        System.out.print("Insira o ID do produto: ");
-        return scanner.nextLine().trim();
-    }
-
-    private Optional<String> lerCampoOpcionalTexto(String label) {
-        System.out.print(label + " (Enter para não alterar/filtrar): ");
-        String valor = scanner.nextLine().trim();
-        return valor.isEmpty() ? Optional.empty() : Optional.of(valor);
-    }
-
     private void executarCadastro() {
         System.out.println("\n=== Cadastro de Produto ===");
-        System.out.print("Nome: ");
-        String name = scanner.nextLine();
-        System.out.print("Segmento: ");
-        String segment = scanner.nextLine();
-        System.out.print("Marca: ");
-        String brand = scanner.nextLine();
-        
-        double price = lerDouble("Valor");
-        int quantity = lerInt("Quantidade");
+        String name = reader.lerTexto("Nome");
+        String segment = reader.lerTexto("Segmento");
+        String brand = reader.lerTexto("Marca");
+        double price = reader.lerDouble("Valor");
+        int quantity = reader.lerInt("Quantidade");
 
         CreateProductDTO.Input input = new CreateProductDTO.Input() {
             @Override
@@ -148,26 +124,25 @@ public class ProductMenu {
     private void executarListagem() {
         System.out.println("\n=== Listagem de Produtos ===");
         ListProductsDTO.Output output = listProducts.execute();
-        imprimirLista(output.products(), "Nenhum produto cadastrado.");
+        presenter.imprimirLista(output.products(), "Nenhum produto cadastrado.");
     }
 
     private void executarBuscaPorId() {
         System.out.println("\n=== Buscar Produto por ID ===");
-        String id = lerId();
+        String id = reader.lerTexto("Insira o ID do produto");
         FindProductByIdDTO.Output output = findProductById.execute(id);
-        imprimirProduto(output.product());
+        presenter.imprimirProduto(output.product());
     }
 
     private void executarAlteracao() {
         System.out.println("\n=== Alteração de Produto ===");
-        String id = lerId();
+        String id = reader.lerTexto("Insira o ID do produto");
 
-        Optional<String> name = lerCampoOpcionalTexto("Novo nome");
-        Optional<String> segment = lerCampoOpcionalTexto("Novo segmento");
-        Optional<String> brand = lerCampoOpcionalTexto("Nova marca");
-
-        Optional<Double> price = lerDoubleOpcional("Novo valor");
-        Optional<Integer> quantity = lerIntOpcional("Nova quantidade");
+        Optional<String> name = reader.lerTextoOpcional("Novo nome");
+        Optional<String> segment = reader.lerTextoOpcional("Novo segmento");
+        Optional<String> brand = reader.lerTextoOpcional("Nova marca");
+        Optional<Double> price = reader.lerDoubleOpcional("Novo valor");
+        Optional<Integer> quantity = reader.lerIntOpcional("Nova quantidade");
 
         UpdateProductDTO.Input input = new UpdateProductDTO.Input() {
             @Override
@@ -203,20 +178,20 @@ public class ProductMenu {
 
         UpdateProductDTO.Output output = updateProduct.execute(input);
         System.out.println("Produto alterado com sucesso!");
-        imprimirProduto(output.product());
+        presenter.imprimirProduto(output.product());
     }
 
     private void executarRemocao() {
         System.out.println("\n=== Remoção de Produto ===");
-        String id = lerId();
+        String id = reader.lerTexto("Insira o ID do produto");
         DeleteProductDTO.Output output = deleteProduct.execute(id);
         System.out.println("Produto removido com sucesso: " + output.product().getName());
     }
 
     private void executarFiltro() {
         System.out.println("\n=== Filtrar Produtos ===");
-        Optional<String> brand = lerCampoOpcionalTexto("Marca");
-        Optional<String> segment = lerCampoOpcionalTexto("Segmento");
+        Optional<String> brand = reader.lerTextoOpcional("Marca");
+        Optional<String> segment = reader.lerTextoOpcional("Segmento");
 
         FilterProductsDTO.Input input = new FilterProductsDTO.Input() {
             @Override
@@ -231,76 +206,6 @@ public class ProductMenu {
         };
 
         FilterProductsDTO.Output output = filterProducts.execute(input);
-        imprimirLista(output.products(), "Nenhum produto encontrado com esses critérios.");
-    }
-
-    private void imprimirLista(Iterable<Product> products, String mensagemVazia) {
-        boolean vazio = true;
-        for (Product p : products) {
-            imprimirProduto(p);
-            vazio = false;
-        }
-        if (vazio) {
-            System.out.println(mensagemVazia);
-        }
-    }
-
-    private void imprimirProduto(Product p) {
-        System.out.printf("ID: %s | Nome: %s | Segmento: %s | Marca: %s | Valor: R$ %.2f | Qtd: %d%n",
-                p.getId(), p.getName(), p.getSegment(), p.getBrand(), p.getPrice(), p.getQuantity());
-    }
-
-    private double lerDouble(String label) {
-        while (true) {
-            System.out.print(label + ": ");
-            String valor = scanner.nextLine().trim();
-            try {
-                return Double.parseDouble(valor);
-            } catch (NumberFormatException e) {
-                System.out.println("Valor inválido. Digite um número (ex: 4500.00).");
-            }
-        }
-    }
-
-    private int lerInt(String label) {
-        while (true) {
-            System.out.print(label + ": ");
-            String valor = scanner.nextLine().trim();
-            try {
-                return Integer.parseInt(valor);
-            } catch (NumberFormatException e) {
-                System.out.println("Valor inválido. Digite um número inteiro (ex: 10).");
-            }
-        }
-    }
-
-    private Optional<Double> lerDoubleOpcional(String label) {
-        while (true) {
-            System.out.print(label + " (Enter para não alterar): ");
-            String valor = scanner.nextLine().trim();
-            if (valor.isEmpty()) {
-                return Optional.empty();
-            }
-            try {
-                return Optional.of(Double.parseDouble(valor));
-            } catch (NumberFormatException e) {
-                System.out.println("Valor inválido. Digite um número ou deixe em branco.");
-            }
-        }
-    }
-
-    private Optional<Integer> lerIntOpcional(String label) {
-        while (true) {
-            System.out.print(label + " (Enter para não alterar): ");
-            String valor = scanner.nextLine().trim();
-            if (valor.isEmpty()) {
-                return Optional.empty();
-            }
-            try {
-                return Optional.of(Integer.parseInt(valor));
-            } catch (NumberFormatException e) {
-                System.out.println("Valor inválido. Digite um número inteiro ou deixe em branco.");
-            }
-        }
+        presenter.imprimirLista(output.products(), "Nenhum produto encontrado com esses critérios.");
     }
 }
