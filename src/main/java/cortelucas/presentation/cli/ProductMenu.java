@@ -110,10 +110,9 @@ public class ProductMenu {
         String segment = scanner.nextLine();
         System.out.print("Marca: ");
         String brand = scanner.nextLine();
-        System.out.print("Valor: ");
-        double price = Double.parseDouble(scanner.nextLine().trim());
-        System.out.print("Quantidade: ");
-        int quantity = Integer.parseInt(scanner.nextLine().trim());
+        
+        double price = lerDouble("Valor");
+        int quantity = lerInt("Quantidade");
 
         CreateProductDTO.Input input = new CreateProductDTO.Input() {
             @Override
@@ -167,13 +166,8 @@ public class ProductMenu {
         Optional<String> segment = lerCampoOpcionalTexto("Novo segmento");
         Optional<String> brand = lerCampoOpcionalTexto("Nova marca");
 
-        System.out.print("Novo valor (Enter para não alterar): ");
-        String precoStr = scanner.nextLine().trim();
-        Optional<Double> price = precoStr.isEmpty() ? Optional.empty() : Optional.of(Double.parseDouble(precoStr));
-
-        System.out.print("Nova quantidade (Enter para não alterar): ");
-        String qtdStr = scanner.nextLine().trim();
-        Optional<Integer> quantity = qtdStr.isEmpty() ? Optional.empty() : Optional.of(Integer.parseInt(qtdStr));
+        Optional<Double> price = lerDoubleOpcional("Novo valor");
+        Optional<Integer> quantity = lerIntOpcional("Nova quantidade");
 
         UpdateProductDTO.Input input = new UpdateProductDTO.Input() {
             @Override
@@ -254,5 +248,59 @@ public class ProductMenu {
     private void imprimirProduto(Product p) {
         System.out.printf("ID: %s | Nome: %s | Segmento: %s | Marca: %s | Valor: R$ %.2f | Qtd: %d%n",
                 p.getId(), p.getName(), p.getSegment(), p.getBrand(), p.getPrice(), p.getQuantity());
+    }
+
+    private double lerDouble(String label) {
+        while (true) {
+            System.out.print(label + ": ");
+            String valor = scanner.nextLine().trim();
+            try {
+                return Double.parseDouble(valor);
+            } catch (NumberFormatException e) {
+                System.out.println("Valor inválido. Digite um número (ex: 4500.00).");
+            }
+        }
+    }
+
+    private int lerInt(String label) {
+        while (true) {
+            System.out.print(label + ": ");
+            String valor = scanner.nextLine().trim();
+            try {
+                return Integer.parseInt(valor);
+            } catch (NumberFormatException e) {
+                System.out.println("Valor inválido. Digite um número inteiro (ex: 10).");
+            }
+        }
+    }
+
+    private Optional<Double> lerDoubleOpcional(String label) {
+        while (true) {
+            System.out.print(label + " (Enter para não alterar): ");
+            String valor = scanner.nextLine().trim();
+            if (valor.isEmpty()) {
+                return Optional.empty();
+            }
+            try {
+                return Optional.of(Double.parseDouble(valor));
+            } catch (NumberFormatException e) {
+                System.out.println("Valor inválido. Digite um número ou deixe em branco.");
+            }
+        }
+    }
+
+    private Optional<Integer> lerIntOpcional(String label) {
+        while (true) {
+            System.out.print(label + " (Enter para não alterar): ");
+            String valor = scanner.nextLine().trim();
+            if (valor.isEmpty()) {
+                return Optional.empty();
+            }
+            try {
+                return Optional.of(Integer.parseInt(valor));
+            } catch (NumberFormatException e) {
+                System.out.println("Valor inválido. Digite um número inteiro ou deixe em branco.");
+            }
+        }
     }
 }
