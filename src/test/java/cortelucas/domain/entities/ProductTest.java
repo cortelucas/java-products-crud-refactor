@@ -104,4 +104,64 @@ public class ProductTest {
         Product product = new Product(id, "Notebook Gamer", "Eletrônicos", "Dell", 1000.0, 10);
         assertThrows(IllegalArgumentException.class, () -> product.setQuantity(-1));
     }
+
+    @Test
+    @DisplayName("Não deve criar produto com nome maior que 255 caracteres")
+    void shouldNotCreateProductWithNameTooLong() {
+        String nomeGrande = "A".repeat(256);
+        assertThrows(IllegalArgumentException.class,
+                () -> new Product("abc12345", nomeGrande, "Eletrônicos", "Dell", 4500.00, 10));
+    }
+
+    @Test
+    @DisplayName("Deve permitir nome com exatamente 255 caracteres")
+    void shouldAllowNameWithExactly255Characters() {
+        String nomeLimite = "A".repeat(255);
+        Product product = new Product("abc12345", nomeLimite, "Eletrônicos", "Dell", 4500.00, 10);
+        assertEquals(255, product.getName().length());
+    }
+
+    @Test
+    @DisplayName("Não deve criar produto com segmento menor que 3 caracteres")
+    void shouldNotCreateProductWithShortSegment() {
+        assertThrows(IllegalArgumentException.class,
+                () -> new Product("abc12345", "Notebook Gamer", "TV", "Dell", 4500.00, 10));
+    }
+
+    @Test
+    @DisplayName("Não deve criar produto com segmento maior que 255 caracteres")
+    void shouldNotCreateProductWithSegmentTooLong() {
+        String segmentoGrande = "A".repeat(256);
+        assertThrows(IllegalArgumentException.class,
+                () -> new Product("abc12345", "Notebook Gamer", segmentoGrande, "Dell", 4500.00, 10));
+    }
+
+    @Test
+    @DisplayName("Não deve criar produto com marca menor que 3 caracteres")
+    void shouldNotCreateProductWithShortBrand() {
+        assertThrows(IllegalArgumentException.class,
+                () -> new Product("abc12345", "Notebook Gamer", "Eletrônicos", "PC", 4500.00, 10));
+    }
+
+    @Test
+    @DisplayName("Não deve criar produto com marca maior que 255 caracteres")
+    void shouldNotCreateProductWithBrandTooLong() {
+        String marcaGrande = "A".repeat(256);
+        assertThrows(IllegalArgumentException.class,
+                () -> new Product("abc12345", "Notebook Gamer", "Eletrônicos", marcaGrande, 4500.00, 10));
+    }
+
+    @Test
+    @DisplayName("Não deve permitir alterar segmento para um valor com menos de 3 caracteres")
+    void shouldNotUpdateSegmentToShortValue() {
+        Product product = new Product("abc12345", "Notebook Gamer", "Eletrônicos", "Dell", 4500.00, 10);
+        assertThrows(IllegalArgumentException.class, () -> product.setSegment("TV"));
+    }
+
+    @Test
+    @DisplayName("Não deve permitir alterar marca para um valor com menos de 3 caracteres")
+    void shouldNotUpdateBrandToShortValue() {
+        Product product = new Product("abc12345", "Notebook Gamer", "Eletrônicos", "Dell", 4500.00, 10);
+        assertThrows(IllegalArgumentException.class, () -> product.setBrand("PC"));
+    }
 }
