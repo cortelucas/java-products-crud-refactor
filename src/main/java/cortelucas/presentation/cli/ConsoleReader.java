@@ -3,6 +3,8 @@ package cortelucas.presentation.cli;
 import java.util.Optional;
 import java.util.Scanner;
 
+import cortelucas.domain.validation.TextValidator;
+
 public class ConsoleReader {
 
     private final Scanner scanner;
@@ -84,6 +86,19 @@ public class ConsoleReader {
                 return Optional.of(Integer.parseInt(valor));
             } catch (NumberFormatException e) {
                 System.out.println("Valor inválido. Digite um número inteiro ou deixe em branco.");
+            }
+        }
+    }
+
+    public String lerTextoValidado(String label, int minLength, int maxLength) {
+        while (true) {
+            System.out.print(label + ": ");
+            String valor = scanner.nextLine().trim();
+            try {
+                TextValidator.validate(valor, label, minLength, maxLength);
+                return valor;
+            } catch (IllegalArgumentException e) {
+                System.out.println(e.getMessage());
             }
         }
     }
