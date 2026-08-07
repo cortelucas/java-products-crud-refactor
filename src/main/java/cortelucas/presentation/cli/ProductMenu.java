@@ -84,9 +84,9 @@ public class ProductMenu {
 
     private void executarCadastro() {
         System.out.println("\n=== Cadastro de Produto ===");
-        String name = reader.lerTexto("Nome");
-        String segment = reader.lerTexto("Segmento");
-        String brand = reader.lerTexto("Marca");
+        String name = reader.lerTextoValidado("Nome", 3, 255);
+        String segment = reader.lerTextoValidado("Segmento", 3, 255);
+        String brand = reader.lerTextoValidado("Marca", 3, 255);
         double price = reader.lerDouble("Valor");
         int quantity = reader.lerInt("Quantidade");
 
