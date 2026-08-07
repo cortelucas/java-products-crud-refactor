@@ -1,5 +1,7 @@
 package cortelucas.domain.entities;
 
+import cortelucas.domain.validation.TextValidator;
+
 // Domain Entity Products
 
 public class Product {
@@ -76,15 +78,15 @@ public class Product {
     }
 
     private void validateName(String name) {
-        validateText(name, "nome", 3, 255);
+        TextValidator.validate(name, "nome", 3, 255);
     }
 
     private void validateSegment(String segment) {
-        validateText(segment, "segmento", 3, 255);
+        TextValidator.validate(segment, "segmento", 3, 255);
     }
 
     private void validateBrand(String brand) {
-        validateText(brand, "marca", 3, 255);
+        TextValidator.validate(brand, "marca", 3, 255);
     }
 
     private void validatePrice(double price) {
@@ -96,20 +98,6 @@ public class Product {
     private void validateQuantity(int quantity) {
         if (quantity < 0) {
             throw new IllegalArgumentException("A quantidade do produto não pode ser negativa.");
-        }
-    }
-
-    private void validateText(String value, String fieldLabel, int minLength, int maxLength) {
-        if (value == null || value.trim().isEmpty()) {
-            throw new IllegalArgumentException("O " + fieldLabel + " do produto não pode ser vazio.");
-        }
-        if (value.trim().length() < minLength) {
-            throw new IllegalArgumentException(
-                    "O " + fieldLabel + " do produto precisa ter pelo menos " + minLength + " caracteres.");
-        }
-        if (value.trim().length() > maxLength) {
-            throw new IllegalArgumentException(
-                    "O " + fieldLabel + " do produto não pode ter mais de " + maxLength + " caracteres.");
         }
     }
 }
