@@ -120,6 +120,22 @@ public class ConsoleReader {
         }
     }
 
+    public Optional<String> lerTextoOpcionalValidado(String label, int minLength, int maxLength) {
+        while (true) {
+            System.out.print(label + " (Enter para não alterar): ");
+            String valor = scanner.nextLine().trim();
+            if (valor.isEmpty()) {
+                return Optional.empty();
+            }
+            try {
+                TextValidator.validate(valor, label, minLength, maxLength);
+                return Optional.of(valor);
+            } catch (IllegalArgumentException e) {
+                System.out.println(e.getMessage());
+            }
+        }
+    }
+
     public void close() {
         scanner.close();
     }
