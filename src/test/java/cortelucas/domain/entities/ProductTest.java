@@ -164,4 +164,20 @@ public class ProductTest {
         Product product = new Product("abc12345", "Notebook Gamer", "Eletrônicos", "Dell", 4500.00, 10);
         assertThrows(IllegalArgumentException.class, () -> product.setBrand("PC"));
     }
+
+    @Test
+    @DisplayName("Deve permitir alterar o segmento do produto para um valor válido")
+    void shouldUpdateProductSegment() {
+        Product product = new Product("abc12345", "Notebook Gamer", "Eletrônicos", "Dell", 4500.00, 10);
+        product.setSegment("Informática");
+        assertEquals("Informática", product.getSegment());
+    }
+
+    @Test
+    @DisplayName("Deve permitir alterar a quantidade do produto para um valor válido")
+    void shouldUpdateProductQuantity() {
+        Product product = new Product("abc12345", "Notebook Gamer", "Eletrônicos", "Dell", 4500.00, 10);
+        product.setQuantity(20);
+        assertEquals(20, product.getQuantity());
+    }
 }
