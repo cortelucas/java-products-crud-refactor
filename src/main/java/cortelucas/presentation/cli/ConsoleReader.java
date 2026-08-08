@@ -31,13 +31,13 @@ public class ConsoleReader {
         }
     }
 
-    public double lerDouble(String label) {
+    public double lerDouble(String label, String fieldLabel) {
         while (true) {
             System.out.print(label + ": ");
             String valor = scanner.nextLine().trim();
             try {
                 double parsed = Double.parseDouble(valor);
-                NumberValidator.validateNonNegative(parsed, label);
+                NumberValidator.validateNonNegative(parsed, fieldLabel);
                 return parsed;
             } catch (NumberFormatException e) {
                 System.out.println("Valor inválido. Digite um número (ex: 4500.00).");
@@ -47,13 +47,13 @@ public class ConsoleReader {
         }
     }
 
-    public int lerInt(String label) {
+    public int lerInt(String label, String fieldLabel) {
         while (true) {
             System.out.print(label + ": ");
             String valor = scanner.nextLine().trim();
             try {
                 int parsed = Integer.parseInt(valor);
-                NumberValidator.validateNonNegative(parsed, label);
+                NumberValidator.validateNonNegative(parsed, fieldLabel);
                 return parsed;
             } catch (NumberFormatException e) {
                 System.out.println("Valor inválido. Digite um número inteiro (ex: 10).");
@@ -69,7 +69,7 @@ public class ConsoleReader {
         return valor.isEmpty() ? Optional.empty() : Optional.of(valor);
     }
 
-    public Optional<Double> lerDoubleOpcional(String label) {
+    public Optional<Double> lerDoubleOpcional(String label, String fieldLabel) {
         while (true) {
             System.out.print(label + " (Enter para não alterar): ");
             String valor = scanner.nextLine().trim();
@@ -78,7 +78,7 @@ public class ConsoleReader {
             }
             try {
                 double parsed = Double.parseDouble(valor);
-                NumberValidator.validateNonNegative(parsed, label);
+                NumberValidator.validateNonNegative(parsed, fieldLabel);
                 return Optional.of(parsed);
             } catch (NumberFormatException e) {
                 System.out.println("Valor inválido. Digite um número ou deixe em branco.");
@@ -88,7 +88,7 @@ public class ConsoleReader {
         }
     }
 
-    public Optional<Integer> lerIntOpcional(String label) {
+    public Optional<Integer> lerIntOpcional(String label, String fieldLabel) {
         while (true) {
             System.out.print(label + " (Enter para não alterar): ");
             String valor = scanner.nextLine().trim();
@@ -97,7 +97,7 @@ public class ConsoleReader {
             }
             try {
                 int parsed = Integer.parseInt(valor);
-                NumberValidator.validateNonNegative(parsed, label);
+                NumberValidator.validateNonNegative(parsed, fieldLabel);
                 return Optional.of(parsed);
             } catch (NumberFormatException e) {
                 System.out.println("Valor inválido. Digite um número inteiro ou deixe em branco.");
@@ -107,12 +107,12 @@ public class ConsoleReader {
         }
     }
 
-    public String lerTextoValidado(String label, int minLength, int maxLength) {
+    public String lerTextoValidado(String label, String fieldLabel, int minLength, int maxLength) {
         while (true) {
             System.out.print(label + ": ");
             String valor = scanner.nextLine().trim();
             try {
-                TextValidator.validate(valor, label, minLength, maxLength);
+                TextValidator.validate(valor, fieldLabel, minLength, maxLength);
                 return valor;
             } catch (IllegalArgumentException e) {
                 System.out.println(e.getMessage());
@@ -120,7 +120,7 @@ public class ConsoleReader {
         }
     }
 
-    public Optional<String> lerTextoOpcionalValidado(String label, int minLength, int maxLength) {
+    public Optional<String> lerTextoOpcionalValidado(String label, String fieldLabel, int minLength, int maxLength) {
         while (true) {
             System.out.print(label + " (Enter para não alterar): ");
             String valor = scanner.nextLine().trim();
@@ -128,7 +128,7 @@ public class ConsoleReader {
                 return Optional.empty();
             }
             try {
-                TextValidator.validate(valor, label, minLength, maxLength);
+                TextValidator.validate(valor, fieldLabel, minLength, maxLength);
                 return Optional.of(valor);
             } catch (IllegalArgumentException e) {
                 System.out.println(e.getMessage());
