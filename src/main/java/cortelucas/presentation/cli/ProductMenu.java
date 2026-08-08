@@ -138,9 +138,9 @@ public class ProductMenu {
         System.out.println("\n=== Alteração de Produto ===");
         String id = reader.lerTexto("Insira o ID do produto");
 
-        Optional<String> name = reader.lerTextoOpcional("Novo nome");
-        Optional<String> segment = reader.lerTextoOpcional("Novo segmento");
-        Optional<String> brand = reader.lerTextoOpcional("Nova marca");
+        Optional<String> name = reader.lerTextoOpcionalValidado("Novo nome", 3, 255);
+        Optional<String> segment = reader.lerTextoOpcionalValidado("Novo segmento", 3, 255);
+        Optional<String> brand = reader.lerTextoOpcionalValidado("Nova marca", 3, 255);
         Optional<Double> price = reader.lerDoubleOpcional("Novo valor");
         Optional<Integer> quantity = reader.lerIntOpcional("Nova quantidade");
 
