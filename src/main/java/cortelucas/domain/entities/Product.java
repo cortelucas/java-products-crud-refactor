@@ -1,5 +1,6 @@
 package cortelucas.domain.entities;
 
+import cortelucas.domain.validation.NumberValidator;
 import cortelucas.domain.validation.TextValidator;
 
 // Domain Entity Products
@@ -90,14 +91,10 @@ public class Product {
     }
 
     private void validatePrice(double price) {
-        if (price < 0) {
-            throw new IllegalArgumentException("O preço do produto não pode ser negativo.");
-        }
+        NumberValidator.validateNonNegative(price, "preço do produto");
     }
 
     private void validateQuantity(int quantity) {
-        if (quantity < 0) {
-            throw new IllegalArgumentException("A quantidade do produto não pode ser negativa.");
-        }
+        NumberValidator.validateNonNegative(quantity, "quantidade");
     }
 }
