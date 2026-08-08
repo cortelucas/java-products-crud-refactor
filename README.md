@@ -20,6 +20,9 @@ src/main/java/cortelucas/
 ├── domain/
 │   ├── entities/
 │   │   └── Product.java                 # Entidade com validação própria
+│   ├── validation/
+│   │   ├── TextValidator.java           # Validação de texto (tamanho mín/máx), reutilizável
+│   │   └── NumberValidator.java         # Validação de número não negativo, reutilizável
 │   └── exceptions/
 │       └── ProductNotFoundException.java
 ├── application/
@@ -38,11 +41,15 @@ src/main/java/cortelucas/
 │       └── InMemoryProductsRepository.java  # Implementação concreta do repositório
 ├── presentation/
 │   └── cli/
-│       └── ProductMenu.java             # Interface de linha de comando
+│       ├── ConsoleReader.java            # Leitura e validação de input via Scanner
+│       ├── ProductPresenter.java         # Formatação e impressão de produtos
+│       └── ProductMenu.java              # Orquestração do fluxo do menu
 └── Main.java                            # Composition root
 ```
 
 **Por que essa separação importa:** a camada de `domain` e `application` não conhece nada sobre `Scanner`, console ou como os dados são persistidos. Isso significa que o repositório em memória pode ser trocado por um banco de dados real (JDBC, JPA, etc.) — ou a interface de linha de comando por uma API REST — sem alterar uma única linha de regra de negócio.
+
+Dentro da própria camada de apresentação, a responsabilidade também é dividida: `ConsoleReader` só sabe ler e validar formato de entrada, `ProductPresenter` só sabe formatar saída, e `ProductMenu` só orquestra o fluxo — cada um muda por um motivo diferente.
 
 ### Fluxo de dependências
 
@@ -87,26 +94,39 @@ java -jar target/crud-projects-1.0-SNAPSHOT.jar
 
 O projeto foi desenvolvido seguindo **TDD** (red-green-refactor) do início ao fim: cada funcionalidade começou com um teste que falha, seguido da implementação mínima para fazê-lo passar.
 
-- **31 testes** cobrindo entidade e todos os 6 casos de uso
+- **49 testes** cobrindo entidade, validadores de domínio, todos os 6 casos de uso e a camada de leitura de entrada (CLI)
 - Testes de use case usam `InMemoryProductsRepository` como implementação real (sem mocks), garantindo que a integração entre camada de aplicação e persistência funciona de fato
 
 ```bash
 mvn test
 ```
 
+## Validação de entrada
+
+A validação acontece em duas camadas complementares:
+
+- **`domain/validation`**: `TextValidator` (tamanho mínimo/máximo de texto) e `NumberValidator` (não negatividade) são a única fonte de verdade das regras de negócio. São usados tanto pela entidade `Product` (defesa em profundidade — protege contra qualquer forma de entrada, inclusive futuras) quanto pelo `ConsoleReader` (feedback imediato ao usuário).
+- **`presentation/cli/ConsoleReader`**: ao detectar um valor inválido (formato incorreto ou fora da regra de negócio), pede o campo novamente sem descartar os demais valores já informados, tanto no cadastro quanto na alteração.
+
+| Campo | Regra |
+| --- | --- |
+| `name`, `segment`, `brand` | não vazio, 3 a 255 caracteres |
+| `price`, `quantity` | não negativo |
+
 ## Decisões de design
 
-- **Entidade autovalidada**: `Product` nunca existe em estado inválido — todas as regras (nome mínimo de 3 caracteres, preço não negativo, etc.) são validadas no construtor e nos setters, não espalhadas pelo código que a utiliza.
+- **Entidade autovalidada**: `Product` nunca existe em estado inválido — todas as regras são validadas no construtor e nos setters, delegando para os validadores de domínio compartilhados.
 - **Atualização parcial com `Optional`**: o caso de uso `UpdateProduct` recebe `Optional<T>` para cada campo alterável — um campo vazio (`Optional.empty()`) significa "não alterar", tornando explícita a intenção, ao contrário de usar `null` com múltiplos significados.
 - **Filtro combinável**: `FilterProducts` aceita marca e segmento como critérios independentes e opcionais, que podem ser usados isoladamente ou em conjunto.
 - **Exceção de domínio explícita**: em vez de retornar `null` quando um produto não é encontrado, os casos de uso lançam `ProductNotFoundException`, evitando `NullPointerException` na camada de apresentação.
 - **Repositório fala a língua do domínio**: `ProductsRepository` trabalha diretamente com a entidade `Product`, não com DTOs de um caso de uso específico — mantendo o contrato de persistência desacoplado da aplicação.
+- **Validadores compartilhados entre camadas**: `TextValidator` e `NumberValidator` evitam duplicar a mesma regra de negócio na entidade e na camada de apresentação — a regra muda em um único lugar.
 
 ## Possíveis evoluções
 
 - Trocar `InMemoryProductsRepository` por uma implementação com banco real (JDBC ou JPA/Hibernate)
 - Expor os casos de uso via API REST (ex: Spring Boot), reaproveitando toda a camada `domain`/`application` sem alterações
-- Adicionar testes de integração para a camada `presentation`
+- Adicionar testes de integração de ponta a ponta para o fluxo completo do `ProductMenu`
 
 ## Autor
 
