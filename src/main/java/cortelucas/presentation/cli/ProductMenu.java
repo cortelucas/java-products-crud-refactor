@@ -84,11 +84,11 @@ public class ProductMenu {
 
     private void executarCadastro() {
         System.out.println("\n=== Cadastro de Produto ===");
-        String name = reader.lerTextoValidado("Nome", 3, 255);
-        String segment = reader.lerTextoValidado("Segmento", 3, 255);
-        String brand = reader.lerTextoValidado("Marca", 3, 255);
-        double price = reader.lerDouble("Valor");
-        int quantity = reader.lerInt("Quantidade");
+        String name = reader.lerTextoValidado("Nome", "nome do produto", 3, 255);
+        String segment = reader.lerTextoValidado("Segmento", "segmento do produto", 3, 255);
+        String brand = reader.lerTextoValidado("Marca", "marca do produto", 3, 255);
+        double price = reader.lerDouble("Valor", "preço do produto");
+        int quantity = reader.lerInt("Quantidade", "quantidade do produto");
 
         CreateProductDTO.Input input = new CreateProductDTO.Input() {
             @Override
@@ -138,11 +138,11 @@ public class ProductMenu {
         System.out.println("\n=== Alteração de Produto ===");
         String id = reader.lerTexto("Insira o ID do produto");
 
-        Optional<String> name = reader.lerTextoOpcionalValidado("Novo nome", 3, 255);
-        Optional<String> segment = reader.lerTextoOpcionalValidado("Novo segmento", 3, 255);
-        Optional<String> brand = reader.lerTextoOpcionalValidado("Nova marca", 3, 255);
-        Optional<Double> price = reader.lerDoubleOpcional("Novo valor");
-        Optional<Integer> quantity = reader.lerIntOpcional("Nova quantidade");
+        Optional<String> name = reader.lerTextoOpcionalValidado("Novo nome", "nome do produto", 3, 255);
+        Optional<String> segment = reader.lerTextoOpcionalValidado("Novo segmento", "segmento do produto", 3, 255);
+        Optional<String> brand = reader.lerTextoOpcionalValidado("Nova marca", "marca do produto", 3, 255);
+        Optional<Double> price = reader.lerDoubleOpcional("Novo valor", "preço do produto");
+        Optional<Integer> quantity = reader.lerIntOpcional("Nova quantidade", "quantidade do produto");
 
         UpdateProductDTO.Input input = new UpdateProductDTO.Input() {
             @Override
