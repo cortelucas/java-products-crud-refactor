@@ -3,6 +3,7 @@ package cortelucas.presentation.cli;
 import java.util.Optional;
 import java.util.Scanner;
 
+import cortelucas.domain.validation.NumberValidator;
 import cortelucas.domain.validation.TextValidator;
 
 public class ConsoleReader {
@@ -35,9 +36,13 @@ public class ConsoleReader {
             System.out.print(label + ": ");
             String valor = scanner.nextLine().trim();
             try {
-                return Double.parseDouble(valor);
+                double parsed = Double.parseDouble(valor);
+                NumberValidator.validateNonNegative(parsed, label);
+                return parsed;
             } catch (NumberFormatException e) {
                 System.out.println("Valor inválido. Digite um número (ex: 4500.00).");
+            } catch (IllegalArgumentException e) {
+                System.out.println(e.getMessage());
             }
         }
     }
@@ -47,9 +52,13 @@ public class ConsoleReader {
             System.out.print(label + ": ");
             String valor = scanner.nextLine().trim();
             try {
-                return Integer.parseInt(valor);
+                int parsed = Integer.parseInt(valor);
+                NumberValidator.validateNonNegative(parsed, label);
+                return parsed;
             } catch (NumberFormatException e) {
                 System.out.println("Valor inválido. Digite um número inteiro (ex: 10).");
+            } catch (IllegalArgumentException e) {
+                System.out.println(e.getMessage());
             }
         }
     }
@@ -68,9 +77,13 @@ public class ConsoleReader {
                 return Optional.empty();
             }
             try {
-                return Optional.of(Double.parseDouble(valor));
+                double parsed = Double.parseDouble(valor);
+                NumberValidator.validateNonNegative(parsed, label);
+                return Optional.of(parsed);
             } catch (NumberFormatException e) {
                 System.out.println("Valor inválido. Digite um número ou deixe em branco.");
+            } catch (IllegalArgumentException e) {
+                System.out.println(e.getMessage());
             }
         }
     }
@@ -83,9 +96,13 @@ public class ConsoleReader {
                 return Optional.empty();
             }
             try {
-                return Optional.of(Integer.parseInt(valor));
+                int parsed = Integer.parseInt(valor);
+                NumberValidator.validateNonNegative(parsed, label);
+                return Optional.of(parsed);
             } catch (NumberFormatException e) {
                 System.out.println("Valor inválido. Digite um número inteiro ou deixe em branco.");
+            } catch (IllegalArgumentException e) {
+                System.out.println(e.getMessage());
             }
         }
     }
